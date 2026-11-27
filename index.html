@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nikita Jewels — Homepage Redesign Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Jost,sans-serif;background:#1c1612;color:#FAF6EE;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 24px;border-bottom:1px solid rgba(232,213,168,.18);flex-wrap:wrap}
+.bar b{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:22px;letter-spacing:.3em;text-transform:uppercase}
+.bar small{display:block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#E8D5A8}
+.seg{display:flex;gap:4px;flex-wrap:wrap}
+.seg button{background:none;border:1px solid rgba(232,213,168,.25);color:#FAF6EE;padding:9px 14px;font:inherit;font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:.3s}
+.seg button span{display:block;font-size:9px;opacity:.55;letter-spacing:.1em}
+.seg button:hover{border-color:#E8D5A8}
+.seg button.on{background:#E8D5A8;color:#14110F;border-color:#E8D5A8}
+.stage{flex:1;overflow:auto;display:flex;justify-content:center;align-items:flex-start;padding:28px;gap:40px}
+.dev{flex:none;transform-origin:top left}
+.dev iframe{border:0;background:#FAF6EE;display:block;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.dev.m iframe{border-radius:34px;border:8px solid #0b0907}
+.dev.t iframe{border-radius:22px;border:10px solid #0b0907}
+.dev.d iframe{border-radius:8px}
+.wrap{display:flex;flex-direction:column;align-items:center;gap:10px}
+.wrap label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#E8D5A8}
+.hint{font-size:11px;color:rgba(250,246,238,.5);letter-spacing:.06em}
+</style></head><body>
+<div class="bar"><div><b>Nikita</b><small>Homepage redesign · interactive prototype</small></div>
+<div class="seg" id="seg"></div></div>
+<div class="stage" id="stage"></div>
+<script>
+const D={all:['Overview'],d1440:['Desktop','1440'],l1280:['Laptop','1280'],t768:['Tablet','768'],m390:['Mobile','390'],m375:['Mobile','375']};
+const sizes={d1440:[1440,900,'d'],l1280:[1280,800,'d'],t768:[768,1024,'t'],m390:[390,844,'m'],m375:[375,812,'m']};
+const seg=document.getElementById('seg'),st=document.getElementById('stage');
+let cur='all';
+Object.entries(D).forEach(([k,v])=>{const b=document.createElement('button');b.dataset.k=k;b.innerHTML=v[0]+(v[1]?`<span>${v[1]}px</span>`:'');b.onclick=()=>{cur=k;render()};seg.appendChild(b)});
+function frame(k,scale){const [w,h,c]=sizes[k];const fw=w+(c=='m'?16:c=='t'?20:0),fh=h+(c=='m'?16:c=='t'?20:0);
+ return `<div class="wrap"><label>${D[k][0]} · ${w}px</label><div style="width:${fw*scale}px;height:${fh*scale}px"><div class="dev ${c}" style="transform:scale(${scale})"><iframe src="home.html" width="${fw}" height="${fh}" title="${D[k][0]}" loading="lazy"></iframe></div></div></div>`}
+function render(){
+ [...seg.children].forEach(b=>b.classList.toggle('on',b.dataset.k==cur));
+ const aw=st.clientWidth-56,ah=st.clientHeight-90;
+ if(cur=='all'){const sc=Math.min((aw-80)/(1440+788+406),ah/1050);
+  st.innerHTML=['d1440','t768','m390'].map(k=>frame(k,sc)).join('');
+ }else{const [w,h]=sizes[cur];const sc=Math.min(1,aw/(w+20),ah/(h+20));st.innerHTML=frame(cur,sc)}
+}
+addEventListener('resize',render);render();
+</script></body></html>

@@ -1,45 +1,884 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Nikita Jewels — Homepage Redesign Prototype</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nikita Jewels — Homepage Redesign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Jost,sans-serif;background:#1c1612;color:#FAF6EE;height:100vh;display:flex;flex-direction:column;overflow:hidden}
-.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 24px;border-bottom:1px solid rgba(232,213,168,.18);flex-wrap:wrap}
-.bar b{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:22px;letter-spacing:.3em;text-transform:uppercase}
-.bar small{display:block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#E8D5A8}
-.seg{display:flex;gap:4px;flex-wrap:wrap}
-.seg button{background:none;border:1px solid rgba(232,213,168,.25);color:#FAF6EE;padding:9px 14px;font:inherit;font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:.3s}
-.seg button span{display:block;font-size:9px;opacity:.55;letter-spacing:.1em}
-.seg button:hover{border-color:#E8D5A8}
-.seg button.on{background:#E8D5A8;color:#14110F;border-color:#E8D5A8}
-.stage{flex:1;overflow:auto;display:flex;justify-content:center;align-items:flex-start;padding:28px;gap:40px}
-.dev{flex:none;transform-origin:top left}
-.dev iframe{border:0;background:#FAF6EE;display:block;box-shadow:0 30px 80px rgba(0,0,0,.5)}
-.dev.m iframe{border-radius:34px;border:8px solid #0b0907}
-.dev.t iframe{border-radius:22px;border:10px solid #0b0907}
-.dev.d iframe{border-radius:8px}
-.wrap{display:flex;flex-direction:column;align-items:center;gap:10px}
-.wrap label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#E8D5A8}
-.hint{font-size:11px;color:rgba(250,246,238,.5);letter-spacing:.06em}
-</style></head><body>
-<div class="bar"><div><b>Nikita</b><small>Homepage redesign · interactive prototype</small></div>
-<div class="seg" id="seg"></div></div>
-<div class="stage" id="stage"></div>
-<script>
-const D={all:['Overview'],d1440:['Desktop','1440'],l1280:['Laptop','1280'],t768:['Tablet','768'],m390:['Mobile','390'],m375:['Mobile','375']};
-const sizes={d1440:[1440,900,'d'],l1280:[1280,800,'d'],t768:[768,1024,'t'],m390:[390,844,'m'],m375:[375,812,'m']};
-const seg=document.getElementById('seg'),st=document.getElementById('stage');
-let cur='all';
-Object.entries(D).forEach(([k,v])=>{const b=document.createElement('button');b.dataset.k=k;b.innerHTML=v[0]+(v[1]?`<span>${v[1]}px</span>`:'');b.onclick=()=>{cur=k;render()};seg.appendChild(b)});
-function frame(k,scale){const [w,h,c]=sizes[k];const fw=w+(c=='m'?16:c=='t'?20:0),fh=h+(c=='m'?16:c=='t'?20:0);
- return `<div class="wrap"><label>${D[k][0]} · ${w}px</label><div style="width:${fw*scale}px;height:${fh*scale}px"><div class="dev ${c}" style="transform:scale(${scale})"><iframe src="home.html" width="${fw}" height="${fh}" title="${D[k][0]}" loading="lazy"></iframe></div></div></div>`}
-function render(){
- [...seg.children].forEach(b=>b.classList.toggle('on',b.dataset.k==cur));
- const aw=st.clientWidth-56,ah=st.clientHeight-90;
- if(cur=='all'){const sc=Math.min((aw-80)/(1440+788+406),ah/1050);
-  st.innerHTML=['d1440','t768','m390'].map(k=>frame(k,sc)).join('');
- }else{const [w,h]=sizes[cur];const sc=Math.min(1,aw/(w+20),ah/(h+20));st.innerHTML=frame(cur,sc)}
+:root{
+  --ivory:#FAF6EE; --beige:#EFE6D6; --sand:#E4D6BD; --champ:#E8D5A8; --gold:#B8935A; --gold-d:#8F6D3A;
+  --ink:#14110F; --brown:#3A2A1E; --brown-d:#241912; --muted:#7A6B5C; --line:rgba(58,42,30,.14);
+  --serif:'Cormorant Garamond','Times New Roman',serif; --sans:'Jost',system-ui,sans-serif;
+  --pad:clamp(20px,5vw,72px); --max:1440px; --ease:cubic-bezier(.22,.7,.2,1);
 }
-addEventListener('resize',render);render();
-</script></body></html>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--sans);font-weight:300;color:var(--ink);background:var(--ivory);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none} button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+img,svg{display:block;max-width:100%}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
+.ico{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round}
+.eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-d);font-weight:400}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:400;line-height:1.08;letter-spacing:-.01em}
+h2{font-size:clamp(34px,4.4vw,60px)} h2 em,h1 em{font-style:italic;color:var(--gold-d)}
+.sec{padding:clamp(64px,9vw,128px) 0}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:clamp(28px,4vw,56px)}
+.sec-head .eyebrow{display:block;margin-bottom:14px}
+.link{font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:400;padding-bottom:6px;border-bottom:1px solid currentColor;white-space:nowrap;transition:color .3s,letter-spacing .4s var(--ease)}
+.link:hover{color:var(--gold-d);letter-spacing:.26em}
+.btn{display:inline-flex;align-items:center;gap:14px;padding:18px 34px;font-size:12px;letter-spacing:.22em;text-transform:uppercase;font-weight:400;border:1px solid var(--ink);transition:all .4s var(--ease);min-height:52px;justify-content:center}
+.btn.dark{background:var(--ink);color:var(--ivory)} .btn.dark:hover{background:var(--gold-d);border-color:var(--gold-d)}
+.btn.gold{background:var(--champ);border-color:var(--champ);color:var(--ink)} .btn.gold:hover{background:var(--ivory);border-color:var(--ivory)}
+.btn.ghost-l{border-color:rgba(250,246,238,.5);color:var(--ivory)} .btn.ghost-l:hover{background:var(--ivory);color:var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:var(--ivory)}
+.btn .arr{transition:transform .4s var(--ease)} .btn:hover .arr{transform:translateX(5px)}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 1s var(--ease),transform 1s var(--ease)} .reveal.in{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+
+/* ---------- art placeholders ---------- */
+.ph{position:relative;overflow:hidden;width:100%;height:100%}
+.ph svg.art{position:absolute;inset:0;width:100%;height:100%;transition:transform 1.4s var(--ease)}
+.t-a{background:radial-gradient(120% 90% at 50% 25%,#fffaf0 0%,#f1e7d3 60%,#e6d6b8 100%)}
+.t-b{background:radial-gradient(110% 90% at 30% 20%,#f4e6c4 0%,#e5cf9c 60%,#cfb27a 100%)}
+.t-c{background:radial-gradient(110% 90% at 50% 30%,#5a4230 0%,#3a2a1e 55%,#1d140e 100%)}
+.t-d{background:radial-gradient(100% 90% at 50% 30%,#2c2723 0%,#14110F 70%)}
+.t-e{background:radial-gradient(110% 90% at 70% 20%,#f6efe3 0%,#e9dcc3 70%,#d9c6a1 100%)}
+.t-f{background:radial-gradient(110% 90% at 30% 30%,#e9d9bf 0%,#d4bd96 60%,#b99a6a 100%)}
+
+/* ---------- announcement ---------- */
+.ann{background:var(--ink);color:var(--champ);font-size:11px;letter-spacing:.22em;text-transform:uppercase;height:38px;position:relative;overflow:hidden}
+.ann .row{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(100%);transition:all .8s var(--ease);padding:0 48px;text-align:center;white-space:nowrap}
+.ann .row.on{opacity:1;transform:none}
+.ann .side{position:absolute;right:var(--pad);top:0;height:100%;display:flex;align-items:center;gap:22px;font-size:11px;z-index:2}
+.ann .side a:hover{color:#fff}
+
+/* ---------- header ---------- */
+header.hd{position:sticky;top:0;z-index:50;background:rgba(250,246,238,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line);transition:box-shadow .4s}
+header.hd.sc{box-shadow:0 10px 40px rgba(36,25,18,.08)}
+.hd-in{display:grid;grid-template-columns:1fr auto 1fr;column-gap:32px;align-items:center;height:84px;transition:height .4s}
+header.sc .hd-in{height:70px}
+.nav{display:flex;gap:clamp(14px,1.8vw,30px);height:100%}
+.nav>li{list-style:none;display:flex;align-items:center}
+.nav>li>a{white-space:nowrap;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:400;position:relative;padding:8px 0;display:block}
+.nav>li>a::after{content:"";position:absolute;left:0;bottom:0;height:1px;width:100%;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
+.nav>li:hover>a::after{transform:scaleX(1)}
+.logo{text-align:center;line-height:1;display:block}
+.logo b{display:block;font-family:var(--serif);font-weight:500;font-size:32px;letter-spacing:.34em;padding-left:.34em;text-transform:uppercase}
+.logo small{display:block;margin-top:5px;font-size:9px;letter-spacing:.62em;padding-left:.62em;color:var(--gold-d);text-transform:uppercase;font-weight:400}
+.tools{display:flex;justify-content:flex-end;gap:6px;align-items:center}
+.tools button,.tools a{width:42px;height:42px;display:grid;place-items:center;position:relative;transition:color .3s}
+.tools button:hover,.tools a:hover{color:var(--gold-d)}
+.cnt{position:absolute;top:4px;right:2px;min-width:16px;height:16px;border-radius:8px;background:var(--gold-d);color:#fff;font-size:9px;display:grid;place-items:center;font-weight:400;opacity:0;transform:scale(.5);transition:.3s var(--ease)}
+.cnt.on{opacity:1;transform:none}
+.burger{display:none}
+/* mega */
+.mega{position:absolute;left:0;right:0;top:100%;background:var(--ivory);border-bottom:1px solid var(--line);box-shadow:0 40px 60px rgba(36,25,18,.1);opacity:0;visibility:hidden;transform:translateY(-8px);transition:all .45s var(--ease);pointer-events:none}
+.nav>li:hover .mega,.nav>li:focus-within .mega{opacity:1;visibility:visible;transform:none;pointer-events:auto}
+.mega-in{display:grid;grid-template-columns:repeat(3,1fr) 1.5fr;gap:48px;padding:48px var(--pad) 56px;max-width:var(--max);margin:0 auto}
+.mega h5{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-d);font-weight:400;margin-bottom:20px}
+.mega ul{list-style:none;display:grid;gap:11px}
+.mega ul a{font-family:var(--serif);font-size:21px;line-height:1.2;position:relative;display:inline-block;transition:transform .4s var(--ease),color .3s}
+.mega ul a:hover{color:var(--gold-d);transform:translateX(6px)}
+.mega .feat{position:relative;aspect-ratio:16/10;overflow:hidden;display:block}
+.mega .feat .cap{position:absolute;left:24px;bottom:20px;color:var(--ivory);z-index:2}
+.mega .feat .cap span{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--champ)}
+.mega .feat .cap h4{font-size:28px;margin-top:4px;color:var(--ivory)}
+.mega .feat::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(20,14,10,.7),transparent 60%);z-index:1}
+.mega .feat:hover svg.art{transform:scale(1.06)}
+.scrim{position:fixed;inset:0;background:rgba(20,17,15,.42);opacity:0;visibility:hidden;transition:.4s;z-index:60}
+.scrim.on{opacity:1;visibility:visible}
+/* search */
+.search{position:fixed;left:0;right:0;top:0;background:var(--ivory);z-index:70;transform:translateY(-102%);transition:transform .6s var(--ease);padding:36px var(--pad) 48px}
+.search.on{transform:none}
+.search form{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:18px;border-bottom:1px solid var(--ink);padding-bottom:14px}
+.search input{flex:1;border:0;background:none;font-family:var(--serif);font-size:clamp(24px,3.4vw,40px);outline:0;min-width:0}
+.search .sug{max-width:900px;margin:26px auto 0;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.search .sug span{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-right:8px}
+.chip{padding:9px 18px;border:1px solid var(--line);font-size:13px;border-radius:40px;transition:.3s} .chip:hover{background:var(--ink);color:var(--ivory);border-color:var(--ink)}
+
+/* ---------- hero ---------- */
+.hero{position:relative;background:var(--brown-d);color:var(--ivory);overflow:hidden;min-height:min(86vh,820px)}
+.hero-in{display:grid;grid-template-columns:1fr 1fr;min-height:inherit;max-width:1680px;margin:0 auto}
+.hero-copy{padding:clamp(48px,7vw,110px) var(--pad);display:flex;flex-direction:column;justify-content:center;position:relative;z-index:3}
+.hero-copy .eyebrow{color:var(--champ);display:flex;align-items:center;gap:16px;margin-bottom:30px}
+.hero-copy .eyebrow::before{content:"";width:48px;height:1px;background:var(--champ)}
+.hero h1{font-size:clamp(46px,5.3vw,88px);font-weight:400;line-height:.98;margin-bottom:28px}
+.hero h1 em{color:var(--champ)}
+.hero p.lead{max-width:420px;font-size:16px;color:rgba(250,246,238,.74);margin-bottom:44px}
+.hero .cta{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.hero .meta{margin-top:56px;display:flex;gap:40px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(250,246,238,.55)}
+.hero .meta b{display:block;font-family:var(--serif);font-size:30px;letter-spacing:0;color:var(--champ);font-weight:400;text-transform:none}
+.hero-art{position:relative;min-height:420px}
+.hero-art::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--brown-d) 0%,transparent 28%);z-index:2;pointer-events:none}
+.hero-art .ph svg.art{animation:drift 14s ease-in-out infinite alternate}
+@keyframes drift{from{transform:scale(1.02) translateY(0)}to{transform:scale(1.07) translateY(-8px)}}
+.hero-tag{position:absolute;right:var(--pad);bottom:34px;z-index:4;background:rgba(250,246,238,.94);color:var(--ink);padding:18px 24px;display:flex;gap:18px;align-items:center;backdrop-filter:blur(8px);transition:transform .5s var(--ease)}
+.hero-tag:hover{transform:translateY(-4px)}
+.hero-tag small{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-d);display:block}
+.hero-tag strong{font-family:var(--serif);font-weight:500;font-size:20px;line-height:1.2}
+.scrollcue{position:absolute;left:50%;bottom:18px;z-index:4;width:1px;height:46px;background:linear-gradient(var(--champ),transparent);animation:cue 2.2s infinite}
+@keyframes cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* trust strip */
+.trust{background:var(--beige);border-bottom:1px solid var(--line)}
+.trust .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding-top:26px;padding-bottom:26px}
+.trust div{display:flex;gap:14px;align-items:center;font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:400}
+.trust svg{color:var(--gold-d);flex:none}
+
+/* ---------- categories ---------- */
+.cats{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(12px,1.6vw,24px)}
+.cat{position:relative;display:block;aspect-ratio:4/5;overflow:hidden}
+.cat .ph{transition:transform 1.2s var(--ease)}
+.cat:hover svg.art{transform:scale(1.08)}
+.cat .lab{position:absolute;left:0;right:0;bottom:0;padding:22px 24px;display:flex;justify-content:space-between;align-items:flex-end;background:linear-gradient(0deg,rgba(20,14,10,.55),transparent);color:var(--ivory);z-index:2}
+.cat .lab h3{font-size:clamp(24px,2.3vw,32px);font-weight:500}
+.cat .lab span{font-size:10px;letter-spacing:.22em;text-transform:uppercase;opacity:0;transform:translateX(-8px);transition:.5s var(--ease);padding-bottom:5px}
+.cat:hover .lab span{opacity:1;transform:none}
+.cat.light .lab{color:var(--ink);background:linear-gradient(0deg,rgba(250,246,238,.8),transparent)}
+
+/* ---------- products ---------- */
+.prods{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(16px,2vw,32px) clamp(12px,1.6vw,24px)}
+.prods.three{grid-template-columns:repeat(3,1fr)}
+.card{position:relative}
+.card .img{position:relative;aspect-ratio:1/1.12;overflow:hidden;display:block}
+.card .img .ph{transition:transform 1.2s var(--ease)}
+.card .img .alt{position:absolute;inset:0;opacity:0;transition:opacity .7s var(--ease)}
+.card:hover .img .alt{opacity:1}
+.card:hover .img .main svg.art{transform:scale(1.06)}
+.badge{position:absolute;top:16px;left:16px;z-index:3;background:var(--ivory);padding:5px 12px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:400}
+.wish{position:absolute;top:10px;right:10px;z-index:4;width:42px;height:42px;display:grid;place-items:center;border-radius:50%;transition:.3s;color:var(--ink)}
+.wish:hover{background:rgba(250,246,238,.9)}
+.wish.on svg{fill:var(--gold-d);stroke:var(--gold-d)} .wish.on{animation:pop .5s var(--ease)}
+@keyframes pop{40%{transform:scale(1.25)}}
+.mq{display:none}
+.qv{position:absolute;left:12px;right:12px;bottom:12px;z-index:4;background:rgba(250,246,238,.96);padding:15px;text-align:center;font-size:11px;letter-spacing:.22em;text-transform:uppercase;font-weight:400;transform:translateY(calc(100% + 16px));transition:transform .55s var(--ease),background .3s}
+.card:hover .qv,.card:focus-within .qv{transform:none} .qv:hover{background:var(--ink);color:var(--ivory)}
+.card .info{padding:18px 2px 0;display:grid;gap:3px}
+.card h3{font-family:var(--serif);font-size:clamp(19px,1.6vw,23px);font-weight:500;line-height:1.2}
+.card .sub{font-size:12px;color:var(--muted);letter-spacing:.06em}
+.card .price{font-size:15px;font-weight:400;margin-top:6px;letter-spacing:.02em}
+
+/* ---------- collections bento ---------- */
+.bento{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:clamp(210px,21vw,320px);gap:clamp(12px,1.6vw,24px)}
+.bn{position:relative;overflow:hidden;color:var(--ivory);display:block}
+.bn.b1{grid-column:span 7;grid-row:span 2}.bn.b2{grid-column:span 5}.bn.b3{grid-column:span 5}
+.bn.b4{grid-column:span 4}.bn.b5{grid-column:span 4}.bn.b6{grid-column:span 4}
+.bn:hover svg.art{transform:scale(1.06)}
+.bn::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(20,14,10,.72),transparent 58%);z-index:1}
+.bn.lt{color:var(--ink)} .bn.lt::after{background:linear-gradient(0deg,rgba(250,246,238,.75),transparent 55%)}
+.bn .tx{position:absolute;z-index:2;left:clamp(20px,2.6vw,40px);bottom:clamp(20px,2.6vw,38px);right:20px}
+.bn .tx span{font-size:10px;letter-spacing:.26em;text-transform:uppercase;opacity:.85}
+.bn .tx h3{font-size:clamp(28px,3vw,50px);margin:6px 0 14px;font-weight:400}
+.bn.b1 .tx h3{font-size:clamp(36px,4.4vw,70px)}
+.bn .tx i{font-style:normal;font-size:11px;letter-spacing:.22em;text-transform:uppercase;border-bottom:1px solid currentColor;padding-bottom:4px;transition:letter-spacing .4s var(--ease)}
+.bn:hover .tx i{letter-spacing:.3em}
+
+/* ---------- story ---------- */
+.story{background:var(--beige)}
+.story-in{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(40px,7vw,120px);align-items:center}
+.story-art{position:relative;padding-bottom:12%}
+.story-art .a1{aspect-ratio:4/5;width:78%}
+.story-art .a2{position:absolute;right:0;bottom:0;width:46%;aspect-ratio:1;border:10px solid var(--beige)}
+.story-art .seal{position:absolute;left:-20px;top:46%;width:112px;height:112px;border-radius:50%;background:var(--ink);color:var(--champ);display:grid;place-items:center;text-align:center;font-size:9px;letter-spacing:.2em;text-transform:uppercase;line-height:1.5;animation:spin 30s linear infinite;z-index:3}
+@keyframes spin{to{transform:rotate(360deg)}}
+.story h2{margin:18px 0 28px}
+.story p{color:var(--muted);font-size:16px;max-width:520px;margin-bottom:18px}
+.pillars{display:grid;grid-template-columns:repeat(2,1fr);gap:28px 36px;margin:40px 0 46px;border-top:1px solid var(--line);padding-top:36px}
+.pillars h4{font-size:22px;font-weight:500;margin-bottom:6px;display:flex;gap:12px;align-items:baseline}
+.pillars h4 sup{font-family:var(--sans);font-size:10px;color:var(--gold-d);letter-spacing:.2em}
+.pillars p{font-size:14px;margin:0}
+
+/* ---------- occasion ---------- */
+.occ{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(10px,1.4vw,20px)}
+.oc{position:relative;aspect-ratio:3/4.3;overflow:hidden;display:block;color:var(--ivory)}
+.oc::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(20,14,10,.7),transparent 55%);z-index:1}
+.oc:hover svg.art{transform:scale(1.07)}
+.oc .tx{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:20px;text-align:center}
+.oc h3{font-size:clamp(20px,1.8vw,27px);font-weight:500}
+.oc span{display:block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;max-height:0;opacity:0;overflow:hidden;transition:.5s var(--ease);color:var(--champ)}
+.oc:hover span{max-height:24px;opacity:1;margin-top:6px}
+
+/* ---------- schemes ---------- */
+.schemes{background:var(--ink);color:var(--ivory);position:relative;overflow:hidden}
+.schemes::before{content:"";position:absolute;width:900px;height:900px;border-radius:50%;right:-300px;top:-380px;background:radial-gradient(circle,rgba(184,147,90,.22),transparent 65%)}
+.schemes .eyebrow{color:var(--champ)} .schemes h2 em{color:var(--champ)}
+.sch-top{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:end;margin-bottom:60px}
+.sch-top p{color:rgba(250,246,238,.62);max-width:480px;justify-self:end}
+.sch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,1.8vw,28px);position:relative}
+.sch{border:1px solid rgba(232,213,168,.22);padding:clamp(28px,3vw,48px);display:flex;flex-direction:column;gap:20px;transition:all .6s var(--ease);position:relative;background:rgba(255,255,255,.015)}
+.sch:hover{border-color:var(--champ);background:rgba(232,213,168,.05);transform:translateY(-8px)}
+.sch .no{font-family:var(--serif);font-size:14px;letter-spacing:.3em;color:var(--champ)}
+.sch .ic{width:58px;height:58px;border:1px solid rgba(232,213,168,.4);border-radius:50%;display:grid;place-items:center;color:var(--champ)}
+.sch h3{font-size:clamp(30px,3vw,44px);font-weight:400}
+.sch p{font-size:14.5px;color:rgba(250,246,238,.62);flex:1}
+.sch .fact{border-top:1px solid rgba(232,213,168,.2);padding-top:18px}
+.sch .fact b{display:block;font-family:var(--serif);font-size:34px;font-weight:400;color:var(--champ);line-height:1.1}
+.sch .fact small{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:rgba(250,246,238,.5)}
+.sch .go{font-size:11px;letter-spacing:.22em;text-transform:uppercase;display:flex;gap:10px;align-items:center;color:var(--champ)}
+.sch .go svg{transition:transform .4s var(--ease)} .sch:hover .go svg{transform:translateX(6px)}
+.note{font-size:11px;color:rgba(250,246,238,.4);margin-top:26px;letter-spacing:.04em}
+
+/* ---------- instagram ---------- */
+.ig-head{text-align:center;margin-bottom:48px}
+.ig-head h2{margin:14px 0 12px}
+.ig-head a.h{font-family:var(--serif);font-size:24px;color:var(--gold-d);border-bottom:1px solid;padding-bottom:2px}
+.ig{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(6px,.8vw,12px)}
+.ig a{position:relative;aspect-ratio:1;overflow:hidden;display:block}
+.ig a:hover svg.art{transform:scale(1.1)}
+.ig .ov{position:absolute;inset:0;background:rgba(36,25,18,.45);display:grid;place-items:center;color:var(--ivory);opacity:0;transition:.5s;z-index:2}
+.ig a:hover .ov{opacity:1}
+
+/* ---------- stores ---------- */
+.stores{background:var(--beige)}
+.st-in{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(30px,5vw,80px);align-items:stretch}
+.st-list{display:grid;gap:0;border-top:1px solid var(--line)}
+.stc{display:grid;grid-template-columns:1fr auto;gap:8px 24px;padding:26px 0;border-bottom:1px solid var(--line);cursor:pointer;transition:padding .5s var(--ease)}
+.stc:hover,.stc.on{padding-left:18px}
+.stc h3{font-size:clamp(24px,2.2vw,30px);font-weight:500;display:flex;gap:12px;align-items:center}
+.stc .rt{font-family:var(--sans);font-size:12px;letter-spacing:.06em;color:var(--gold-d);font-weight:400}
+.stc address{font-style:normal;font-size:14px;color:var(--muted);grid-column:1;max-width:400px}
+.stc .ph-n{font-size:14px;grid-column:1}
+.stc .dir{grid-column:2;grid-row:1/4;align-self:center;font-size:11px;letter-spacing:.2em;text-transform:uppercase;border:1px solid var(--ink);padding:12px 20px;display:flex;gap:8px;align-items:center;transition:.3s;white-space:nowrap}
+.stc .dir:hover{background:var(--ink);color:var(--ivory)}
+.stc.on h3{color:var(--gold-d)}
+.map{position:relative;min-height:520px;background:#e9ddc6;overflow:hidden}
+.map svg{position:absolute;inset:0;width:100%;height:100%}
+.pin{position:absolute;transform:translate(-50%,-100%);display:grid;justify-items:center;transition:.5s var(--ease);cursor:pointer}
+.pin i{width:34px;height:34px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--ink);display:grid;place-items:center;box-shadow:0 8px 20px rgba(0,0,0,.25);transition:.4s}
+.pin i::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--champ)}
+.pin.on i{background:var(--gold-d);transform:rotate(-45deg) scale(1.3)}
+.pin span{margin-top:8px;background:var(--ivory);padding:3px 10px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;opacity:.9}
+.map-card{position:absolute;left:24px;bottom:24px;right:24px;max-width:340px;background:var(--ivory);padding:22px 24px;z-index:3;box-shadow:0 20px 50px rgba(36,25,18,.18)}
+.map-card small{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-d)}
+.map-card h4{font-size:26px;margin:4px 0 6px} .map-card p{font-size:13px;color:var(--muted);line-height:1.5}
+
+/* ---------- reviews ---------- */
+.rev-top{display:grid;grid-template-columns:auto 1fr;gap:clamp(28px,5vw,90px);align-items:center;margin-bottom:52px}
+.score{font-family:var(--serif);font-size:clamp(72px,9vw,128px);line-height:.9;color:var(--gold-d);font-weight:400}
+.stars{display:flex;gap:3px;color:var(--gold)} .stars svg{width:15px;height:15px;fill:currentColor;stroke:none}
+.revs{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,1.8vw,28px)}
+.rv{padding:clamp(26px,3vw,44px);background:#fff;border:1px solid var(--line);display:flex;flex-direction:column;gap:20px;transition:.5s var(--ease)}
+.rv:hover{transform:translateY(-6px);box-shadow:0 30px 60px rgba(36,25,18,.08)}
+.rv q{font-family:var(--serif);font-size:clamp(21px,1.9vw,26px);line-height:1.35;quotes:none;flex:1;color:var(--brown)}
+.rv .who{display:flex;gap:14px;align-items:center;font-size:13px}
+.rv .av{width:42px;height:42px;border-radius:50%;background:var(--sand);display:grid;place-items:center;font-family:var(--serif);font-size:18px;color:var(--brown)}
+.rv .tagp{font-size:9px;letter-spacing:.18em;text-transform:uppercase;border:1px dashed var(--gold);color:var(--gold-d);padding:3px 8px;align-self:flex-start}
+
+/* ---------- newsletter ---------- */
+.news{position:relative;background:var(--champ);overflow:hidden}
+.news-in{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,6vw,100px);align-items:center;padding:clamp(56px,8vw,110px) 0}
+.news h2{margin:14px 0 16px} .news p{color:var(--brown);max-width:420px}
+.nf{display:flex;border-bottom:1px solid var(--ink);padding-bottom:10px;gap:12px}
+.nf input{flex:1;background:none;border:0;font:inherit;font-size:17px;outline:0;padding:12px 0;min-width:0;color:var(--ink)}
+.nf input::placeholder{color:rgba(20,17,15,.5)}
+.nf button{font-size:12px;letter-spacing:.22em;text-transform:uppercase;font-weight:400;display:flex;gap:10px;align-items:center;padding:0 6px;min-height:44px}
+.news small{display:block;margin-top:16px;font-size:12px;color:var(--brown)}
+.news .deco{position:absolute;right:-120px;top:50%;transform:translateY(-50%);width:520px;opacity:.18;pointer-events:none}
+
+/* ---------- footer ---------- */
+footer{background:var(--brown-d);color:rgba(250,246,238,.7);padding-top:clamp(56px,7vw,96px)}
+.ft-top{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1.2fr;gap:clamp(24px,3vw,56px);padding-bottom:56px}
+footer .logo{text-align:left} footer .logo b{color:var(--ivory);padding-left:0;font-size:30px} footer .logo small{padding-left:0}
+footer p{font-size:14px;margin:22px 0;max-width:300px}
+footer h5{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--champ);font-weight:400;margin-bottom:22px}
+footer ul{list-style:none;display:grid;gap:12px;font-size:14px}
+footer ul a{transition:color .3s,padding .3s} footer ul a:hover{color:var(--champ);padding-left:4px}
+.soc{display:flex;gap:10px}
+.soc a{width:42px;height:42px;border:1px solid rgba(232,213,168,.3);border-radius:50%;display:grid;place-items:center;color:var(--champ);transition:.3s}
+.soc a:hover{background:var(--champ);color:var(--ink)}
+.ft-news{border-top:1px solid rgba(232,213,168,.14);border-bottom:1px solid rgba(232,213,168,.14);padding:34px 0;display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center}
+.ft-news h4{font-size:28px;color:var(--ivory)}
+.ft-news .nf{border-color:rgba(232,213,168,.5)} .ft-news .nf input,.ft-news .nf button{color:var(--ivory)} .ft-news .nf input::placeholder{color:rgba(250,246,238,.45)}
+.ft-pay{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:30px 0;flex-wrap:wrap}
+.pays{display:flex;gap:8px;flex-wrap:wrap}
+.pays span{border:1px solid rgba(232,213,168,.28);padding:7px 14px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ivory)}
+.ft-bot{border-top:1px solid rgba(232,213,168,.14);padding:24px 0 32px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12px}
+.ft-bot nav{display:flex;gap:22px;flex-wrap:wrap}
+.ft-bot a:hover{color:var(--champ)}
+.acc-btn{display:none}
+
+/* ---------- quick view ---------- */
+.modal{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:20px;opacity:0;visibility:hidden;transition:.4s}
+.modal.on{opacity:1;visibility:visible}
+.modal .bg{position:absolute;inset:0;background:rgba(20,17,15,.55);backdrop-filter:blur(4px)}
+.modal .box{position:relative;background:var(--ivory);max-width:960px;width:100%;display:grid;grid-template-columns:1fr 1fr;transform:translateY(24px) scale(.98);transition:.6s var(--ease);max-height:92vh;overflow:auto}
+.modal.on .box{transform:none}
+.modal .mi{aspect-ratio:1/1.1}
+.modal .mt{padding:clamp(28px,4vw,56px);display:flex;flex-direction:column;gap:14px;justify-content:center}
+.modal h3{font-size:clamp(30px,3vw,42px)} .modal .pr{font-size:22px;font-weight:400}
+.modal .spec{display:grid;gap:8px;font-size:14px;border-top:1px solid var(--line);padding-top:16px;margin-top:6px}
+.modal .spec div{display:flex;justify-content:space-between}
+.modal .x{position:absolute;right:10px;top:10px;z-index:3;width:44px;height:44px;display:grid;place-items:center;background:var(--ivory);border-radius:50%}
+.toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,30px);background:var(--ink);color:var(--ivory);padding:14px 26px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;z-index:100;opacity:0;transition:.5s var(--ease);pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- mobile drawer / tab bar ---------- */
+.drawer{position:fixed;top:0;left:0;bottom:0;width:min(88vw,400px);background:var(--ivory);z-index:80;transform:translateX(-102%);transition:transform .6s var(--ease);display:flex;flex-direction:column;overflow-y:auto}
+.drawer.on{transform:none}
+.dr-top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--ivory);z-index:2}
+.dr-top .logo b{font-size:24px}
+.dr-top .logo small{font-size:8px;margin-top:4px}
+.dr-sec{padding:8px 0}
+.dr-sec>button,.dr-sec>a{width:100%;display:flex;justify-content:space-between;align-items:center;padding:20px 24px;font-family:var(--serif);font-size:26px;border-bottom:1px solid var(--line);text-align:left;min-height:60px}
+.dr-sec .ch{transition:transform .4s} .dr-sec .open .ch{transform:rotate(45deg)}
+.dsub{max-height:0;overflow:hidden;transition:max-height .6s var(--ease);background:var(--beige)}
+.dsub ul{list-style:none;padding:12px 24px 20px;display:grid;grid-template-columns:1fr 1fr;gap:2px 16px}
+.dsub a{display:block;padding:12px 0;font-size:15px}
+.dr-foot{margin-top:auto;padding:24px;display:grid;gap:14px;font-size:13px;border-top:1px solid var(--line)}
+.dr-foot a{display:flex;gap:12px;align-items:center}
+.tabbar{display:none}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width:1280px){
+  .mega-in{gap:32px}
+  .hero-in{grid-template-columns:1.05fr 1fr}
+  .ft-top{grid-template-columns:1.4fr 1fr 1fr 1fr}.ft-top>div:last-child{grid-column:1/-1}
+}
+@media (max-width:1024px){
+  .nav{display:none}.burger{display:grid}
+  .hd-in{grid-template-columns:1fr auto 1fr}
+  .tools .hide-t{display:none}
+  .hero-in{grid-template-columns:1fr}
+  .hero-copy{padding-bottom:80px}
+  .hero-art{min-height:520px;order:-1}.hero-art::before{background:linear-gradient(0deg,var(--brown-d),transparent 40%)}
+  .hero-copy{margin-top:-120px}.hero .meta{display:none}.scrollcue{display:none}
+  .hero h1{font-size:clamp(46px,9vw,84px)}
+  .trust .wrap{grid-template-columns:repeat(2,1fr)}
+  .cats{grid-template-columns:repeat(4,1fr)}
+  .prods{grid-template-columns:repeat(2,1fr)}.prods.three{grid-template-columns:repeat(3,1fr)}
+  .bento{grid-template-columns:repeat(6,1fr);grid-auto-rows:260px}
+  .bn.b1{grid-column:span 6;grid-row:span 2}.bn.b2,.bn.b3,.bn.b4,.bn.b5{grid-column:span 3}.bn.b6{grid-column:span 6}
+  .story-in{grid-template-columns:1fr}
+  .occ{grid-template-columns:repeat(3,1fr)}
+  .sch-top{grid-template-columns:1fr;gap:20px}.sch-top p{justify-self:start}
+  .sch-grid{grid-template-columns:1fr}.sch{display:grid;grid-template-columns:auto 1fr;gap:12px 28px}
+  .sch .fact,.sch .go{grid-column:2}
+  .ig{grid-template-columns:repeat(3,1fr)}
+  .st-in{grid-template-columns:1fr}.map{min-height:440px;order:-1}
+  .revs{grid-template-columns:1fr 1fr}.revs .rv:last-child{display:none}
+  .news-in{grid-template-columns:1fr}
+  .ft-top{grid-template-columns:1fr 1fr 1fr}.ft-top>div:first-child{grid-column:1/-1}
+  .ft-news{grid-template-columns:1fr}
+}
+@media (max-width:768px){
+  :root{--pad:20px}
+  body{padding-bottom:68px}
+  .ann{font-size:10px;letter-spacing:.14em}.ann .side{display:none}
+  .hd-in{height:62px;grid-template-columns:48px 1fr auto}
+  header.sc .hd-in{height:58px}
+  .logo b{font-size:23px;letter-spacing:.3em}.logo small{font-size:7.5px;margin-top:4px;letter-spacing:.5em}
+  .tools .hide-m{display:none}
+  .burger{margin-left:-10px}
+  .tools button,.tools a,.burger{width:44px;height:44px}
+  .sec{padding:56px 0}
+  .sec-head{flex-direction:column;align-items:flex-start;gap:14px}
+  h2{font-size:clamp(32px,9vw,44px)}
+  .hero{min-height:0}
+  .hero-art{min-height:0;height:62vw;max-height:440px;min-height:340px}
+  .hero-copy{margin-top:-90px;padding:0 var(--pad) 56px}
+  .hero h1{font-size:clamp(44px,13vw,64px);margin-bottom:20px}
+  .hero p.lead{font-size:15px;margin-bottom:30px}
+  .hero .cta .btn{width:100%}
+  .hero-tag{display:none}
+  .trust .wrap{grid-template-columns:1fr 1fr;gap:16px 12px;padding-top:20px;padding-bottom:20px}
+  .trust div{font-size:10px;letter-spacing:.1em;gap:10px;align-items:flex-start}
+  .trust svg{width:20px;height:20px}
+  /* categories: 2-col mosaic */
+  .cats{grid-template-columns:1fr 1fr;gap:10px}.cat{aspect-ratio:3/4}
+  .cat .lab{padding:14px}.cat .lab span{display:none}.cat .lab h3{font-size:22px}
+  /* product rows: swipe carousel */
+  .prods.swipe{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;margin:0 calc(var(--pad)*-1);padding:0 var(--pad) 8px;scrollbar-width:none}
+  .prods.swipe::-webkit-scrollbar{display:none}
+  .prods.swipe .card{flex:0 0 68%;scroll-snap-align:start}
+  .prods.three{grid-template-columns:1fr 1fr;gap:20px 10px}
+  .qv{display:none}
+  .mq{display:grid;position:absolute;right:10px;bottom:10px;z-index:4;width:40px;height:40px;place-items:center;background:rgba(250,246,238,.95);border-radius:50%}
+  .card h3{font-size:18px}.card .price{font-size:14px}
+  .bento{grid-template-columns:1fr 1fr;grid-auto-rows:44vw;gap:10px}
+  .bn.b1{grid-column:span 2;grid-row:span 2}.bn.b2,.bn.b3,.bn.b4,.bn.b5{grid-column:span 1}.bn.b6{grid-column:span 2}
+  .bn .tx{left:16px;bottom:16px}.bn .tx h3{font-size:26px;margin-bottom:8px}.bn.b1 .tx h3{font-size:40px}
+  .bn .tx span{font-size:9px}
+  .story-art .a1{width:84%}.story-art .seal{width:92px;height:92px;left:auto;right:6%;top:-20px;font-size:8px}
+  .pillars{grid-template-columns:1fr;gap:20px}
+  .occ{grid-template-columns:1fr 1fr;gap:10px}.oc{aspect-ratio:3/3.6}.oc span{display:none}
+  .sch{grid-template-columns:1fr;padding:28px 24px}.sch .fact,.sch .go{grid-column:1}
+  .ig{grid-template-columns:repeat(3,1fr);gap:4px}.ig a:nth-child(n+7){display:none}
+  .stc{grid-template-columns:1fr}.stc .dir{grid-column:1;grid-row:auto;justify-content:center;margin-top:10px;min-height:48px}
+  .stc:hover,.stc.on{padding-left:0}
+  .map{min-height:360px}.map-card{display:none}
+  .rev-top{grid-template-columns:1fr;gap:12px}
+  .revs{grid-template-columns:none;scroll-padding-left:20px;grid-auto-flow:column;grid-auto-columns:84%;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -20px;padding:0 20px 10px;scrollbar-width:none}
+  .revs::-webkit-scrollbar{display:none}.revs .rv{scroll-snap-align:start}.revs .rv:last-child{display:flex}
+  .news-in{padding:56px 0}
+  .news .deco{display:none}
+  .ft-top{grid-template-columns:1fr;gap:0}
+  .ft-top>div:first-child{padding-bottom:28px}
+  .ft-top .acc{border-top:1px solid rgba(232,213,168,.14)}
+  .ft-top .acc h5{margin:0;padding:20px 0;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+  .ft-top .acc h5::after{content:"+";font-family:var(--serif);font-size:24px;line-height:1;transition:transform .3s}
+  .ft-top .acc.open h5::after{transform:rotate(45deg)}
+  .ft-top .acc ul{max-height:0;overflow:hidden;transition:max-height .5s var(--ease);gap:0}
+  .ft-top .acc ul a{display:block;padding:11px 0}
+  .ft-top>div:last-child{padding-top:28px;border-top:1px solid rgba(232,213,168,.14)}
+  .ft-news{display:none}
+  .ft-pay{flex-direction:column;align-items:flex-start}
+  .ft-bot{flex-direction:column}
+  .modal{align-items:end;padding:0}.modal .box{grid-template-columns:1fr;max-height:92vh;border-radius:0}.modal .mi{aspect-ratio:1/.8}
+  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:55;background:rgba(250,246,238,.96);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+  .tabbar a,.tabbar button{display:grid;justify-items:center;gap:2px;padding:9px 0 8px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;position:relative;min-height:56px;font-weight:400}
+  .tabbar svg{width:22px;height:22px}
+  .tabbar .cnt{top:4px;right:calc(50% - 18px)}
+  .toast{bottom:84px}
+}
+@media (max-width:389px){
+  .logo b{font-size:21px}
+  .hero h1{font-size:42px}
+  .prods.swipe .card{flex-basis:74%}
+  .sch h3{font-size:30px}
+  .tabbar a,.tabbar button{font-size:9px}
+  .btn{padding:16px 22px;letter-spacing:.18em}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<!-- SVG sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F7E7BC"/><stop offset=".35" stop-color="#D8B676"/><stop offset=".7" stop-color="#A67C3E"/><stop offset="1" stop-color="#E2C386"/></linearGradient>
+  <linearGradient id="goldR" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7E7BC"/><stop offset=".45" stop-color="#C79B55"/><stop offset="1" stop-color="#8F6D3A"/></linearGradient>
+  <linearGradient id="goldD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8F6D3A"/><stop offset="1" stop-color="#5E4422"/></linearGradient>
+  <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D9AE88"/><stop offset=".6" stop-color="#B07C57"/><stop offset="1" stop-color="#7A4E33"/></linearGradient>
+  <linearGradient id="silk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6A1F2B"/><stop offset="1" stop-color="#2E0D14"/></linearGradient>
+  <radialGradient id="gem" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#E7EEF5"/><stop offset="1" stop-color="#A9B8C8"/></radialGradient>
+  <radialGradient id="glow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#F7E7BC" stop-opacity=".55"/><stop offset="1" stop-color="#F7E7BC" stop-opacity="0"/></radialGradient>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#3a2a1e" flood-opacity=".32"/></filter>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-8-5-8-11a4.5 4.5 0 018-2.7A4.5 4.5 0 0120 9c0 6-8 11-8 11z"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 016 0v2"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 8h18M3 16h12"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></symbol>
+  <symbol id="i-arr" viewBox="0 0 24 24"><path d="M4 12h16M14 6l6 6-6 6"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6-7-11a7 7 0 0114 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9H4z"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 21l1.6-7L2 9.2l7.1-.6z"/></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r=".6"/></symbol>
+  <symbol id="i-fb" viewBox="0 0 24 24"><path d="M14 8h3V4h-3a4 4 0 00-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8z"/></symbol>
+  <symbol id="i-xx" viewBox="0 0 24 24"><path d="M4 4l16 16M20 4L4 20"/></symbol>
+  <symbol id="i-gem" viewBox="0 0 24 24"><path d="M6 4h12l4 6-10 11L2 10z"/><path d="M2 10h20M9 4l-2 6 5 11 5-11-2-6"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><path d="M2 6h12v10H2zM14 10h5l3 3v3h-8"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A15 15 0 013 6a2 2 0 012-2z"/></symbol>
+  <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5c0-1 1.3-1.5 3-1.5s3 .7 3 1.8-1.5 1.7-3 1.9-3 .8-3 2 1.3 1.8 3 1.8 3-.6 3-1.6"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10"/><path d="M8 10V7a4 4 0 018 0v3"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v6M12 15v6M3 12h6M15 12h6M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+</defs>
+</svg>
+
+<!-- 01 ANNOUNCEMENT -->
+<div class="ann" id="ann">
+  <div class="row on">Visit our four showrooms across Navi Mumbai</div>
+  <div class="row">Nikita Shine · Nikita Sparkle · Golden Lock — gold savings schemes</div>
+  <div class="row">Crafting timeless elegance for life’s most precious moments</div>
+  <div class="side"><a href="#stores">Store Locator</a><a href="#schemes">Gold Schemes</a></div>
+</div>
+
+<!-- 02 HEADER -->
+<header class="hd" id="hd">
+  <div class="wrap hd-in">
+    <ul class="nav">
+      <li><a href="#cats">Shop</a>
+        <div class="mega"><div class="mega-in">
+          <div><h5>Jewellery</h5><ul><li><a href="#cats">Rings</a></li><li><a href="#cats">Earrings</a></li><li><a href="#cats">Necklaces</a></li><li><a href="#cats">Bangles</a></li><li><a href="#cats">Bracelets</a></li></ul></div>
+          <div><h5>More Categories</h5><ul><li><a href="#cats">Pendants</a></li><li><a href="#cats">Mangalsutra</a></li><li><a href="#cats">Chains</a></li><li><a href="#cats">Kids</a></li><li><a href="#cats">All Jewellery</a></li></ul></div>
+          <div><h5>By Metal &amp; Stone</h5><ul><li><a href="#">Gold</a></li><li><a href="#">Diamond</a></li><li><a href="#">Polki</a></li><li><a href="#">Platinum</a></li><li><a href="#">Silver</a></li></ul></div>
+          <a class="feat" href="#new"><div class="ph t-c" data-art="necklace" data-v="1"></div><div class="cap"><span>Just arrived</span><h4>New Arrivals</h4></div></a>
+        </div></div>
+      </li>
+      <li><a href="#collections">Collections</a>
+        <div class="mega"><div class="mega-in">
+          <div><h5>Signature</h5><ul><li><a href="#collections">Bridal Edit</a></li><li><a href="#collections">Solitaire Classics</a></li><li><a href="#collections">Diamond</a></li><li><a href="#collections">Antique</a></li><li><a href="#collections">Temple Jewellery</a></li></ul></div>
+          <div><h5>Everyday</h5><ul><li><a href="#">Everyday Fine</a></li><li><a href="#">Office Wear</a></li><li><a href="#">Eternity</a></li><li><a href="#">Black Beads</a></li><li><a href="#">Evil Eye</a></li></ul></div>
+          <div><h5>Designer Stories</h5><ul><li><a href="#">Butterfly</a></li><li><a href="#">Peepal</a></li><li><a href="#">Luna</a></li><li><a href="#">Ocean</a></li><li><a href="#">Garden</a></li></ul></div>
+          <a class="feat" href="#collections"><div class="ph t-b" data-art="ring" data-v="1"></div><div class="cap"><span>Signature</span><h4>Solitaire Classics</h4></div></a>
+        </div></div>
+      </li>
+      <li><a href="#new">New Arrivals</a></li>
+      <li><a href="#best">Best Sellers</a></li>
+      <li><a href="#story">About Us</a></li>
+    </ul>
+    <button class="burger" id="burger" aria-label="Open menu"><svg class="ico"><use href="#i-menu"/></svg></button>
+    <a class="logo" href="#top" aria-label="Nikita Jewels home"><b>Nikita</b><small>Jewels</small></a>
+    <div class="tools">
+      <button id="sBtn" aria-label="Search"><svg class="ico"><use href="#i-search"/></svg></button>
+      <a class="hide-t hide-m" href="#" aria-label="Account"><svg class="ico"><use href="#i-user"/></svg></a>
+      <button class="hide-m" aria-label="Wishlist"><svg class="ico"><use href="#i-heart"/></svg><span class="cnt" id="wc">0</span></button>
+      <button aria-label="Shopping bag"><svg class="ico"><use href="#i-bag"/></svg><span class="cnt" id="bc">0</span></button>
+    </div>
+  </div>
+</header>
+
+<!-- search overlay -->
+<div class="search" id="search">
+  <form onsubmit="return false"><svg class="ico"><use href="#i-search"/></svg><input placeholder="Search rings, bangles, collections…" aria-label="Search"><button type="button" id="sx" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button></form>
+  <div class="sug"><span>Popular</span><a class="chip" href="#">Gold bangles</a><a class="chip" href="#">Diamond rings</a><a class="chip" href="#">Mangalsutra</a><a class="chip" href="#">Stud earrings</a><a class="chip" href="#">Bridal Edit</a></div>
+</div>
+<div class="scrim" id="scrim"></div>
+
+<!-- mobile drawer -->
+<aside class="drawer" id="drawer">
+  <div class="dr-top"><a class="logo" href="#top"><b>Nikita</b><small>Jewels</small></a><button id="dx" aria-label="Close menu" style="width:44px;height:44px;display:grid;place-items:center"><svg class="ico"><use href="#i-x"/></svg></button></div>
+  <div class="dr-sec">
+    <button class="acc-t">Shop <svg class="ico ch"><use href="#i-spark"/></svg></button>
+    <div class="dsub"><ul><li><a href="#cats">Rings</a></li><li><a href="#cats">Earrings</a></li><li><a href="#cats">Necklaces</a></li><li><a href="#cats">Bangles</a></li><li><a href="#cats">Bracelets</a></li><li><a href="#cats">Pendants</a></li><li><a href="#cats">Mangalsutra</a></li><li><a href="#cats">Chains</a></li></ul></div>
+    <button class="acc-t">Collections <svg class="ico ch"><use href="#i-spark"/></svg></button>
+    <div class="dsub"><ul><li><a href="#collections">Bridal Edit</a></li><li><a href="#collections">Diamond</a></li><li><a href="#collections">Antique</a></li><li><a href="#collections">Temple</a></li><li><a href="#collections">Solitaire</a></li><li><a href="#collections">Everyday Fine</a></li></ul></div>
+    <a href="#new">New Arrivals</a><a href="#best">Best Sellers</a><a href="#schemes">Gold Schemes</a><a href="#story">About Us</a>
+  </div>
+  <div class="dr-foot"><a href="#"><svg class="ico"><use href="#i-user"/></svg>Account</a><a href="#"><svg class="ico"><use href="#i-heart"/></svg>Wishlist</a><a href="#stores"><svg class="ico"><use href="#i-pin"/></svg>Find a showroom</a></div>
+</aside>
+
+<main id="top">
+<!-- 03 HERO -->
+<section class="hero">
+  <div class="hero-in">
+    <div class="hero-copy">
+      <span class="eyebrow reveal">The Golden Era Collection</span>
+      <h1 class="reveal d1">Timeless <em>elegance,</em><br>worn with grace.</h1>
+      <p class="lead reveal d2">Exquisite designs that celebrate life’s most precious moments — crafted with love, made to be treasured for generations.</p>
+      <div class="cta reveal d3"><a class="btn gold" href="#cats">Discover the Collection <svg class="ico arr" width="18"><use href="#i-arr"/></svg></a><a class="link" href="#stores" style="color:var(--ivory)">Visit a showroom</a></div>
+      <div class="meta"><div><b>4</b>Showrooms</div><div><b>4.9★</b>Google rated</div></div>
+    </div>
+    <div class="hero-art">
+      <div class="ph" id="heroArt"></div>
+      <a class="hero-tag" href="#new"><div><small>The Edit</small><strong>Floral Gold Earrings</strong></div><svg class="ico"><use href="#i-arr"/></svg></a>
+    </div>
+  </div>
+  <div class="scrollcue"></div>
+</section>
+
+<div class="trust"><div class="wrap">
+  <div><svg class="ico"><use href="#i-gem"/></svg>Crafted in gold &amp; diamond</div>
+  <div><svg class="ico"><use href="#i-pin"/></svg>4 showrooms in Navi Mumbai</div>
+  <div><svg class="ico"><use href="#i-coin"/></svg>Gold savings schemes</div>
+  <div><svg class="ico"><use href="#i-truck"/></svg>Shipping &amp; delivery</div>
+</div></div>
+
+<!-- 04 CATEGORIES -->
+<section class="sec" id="cats"><div class="wrap">
+  <div class="sec-head"><div><span class="eyebrow">Shop by Category</span><h2 class="reveal">Find your <em>signature</em> piece</h2></div><a class="link" href="#">All Jewellery</a></div>
+  <div class="cats" id="catGrid"></div>
+</div></section>
+
+<!-- 05 NEW ARRIVALS -->
+<section class="sec" id="new" style="padding-top:0"><div class="wrap">
+  <div class="sec-head"><div><span class="eyebrow">Just Arrived</span><h2 class="reveal">New <em>Arrivals</em></h2></div><a class="link" href="#">View all new</a></div>
+  <div class="prods swipe" id="newGrid"></div>
+</div></section>
+
+<!-- 06 COLLECTIONS -->
+<section class="sec" id="collections" style="background:var(--ivory);padding-top:0"><div class="wrap">
+  <div class="sec-head"><div><span class="eyebrow">Signature Collections</span><h2 class="reveal">Stories in <em>gold</em> &amp; light</h2></div><a class="link" href="#">All collections</a></div>
+  <div class="bento">
+    <a class="bn b1 reveal" href="#"><div class="ph t-c" data-art="necklace" data-v="2"></div><div class="tx"><span>Collection</span><h3>Bridal Edit</h3><i>Explore</i></div></a>
+    <a class="bn b2 lt reveal d1" href="#"><div class="ph t-a" data-art="ring" data-v="1"></div><div class="tx"><span>Collection</span><h3>Diamond</h3><i>Explore</i></div></a>
+    <a class="bn b3 reveal d2" href="#"><div class="ph t-f" data-art="bangle" data-v="1"></div><div class="tx"><span>Collection</span><h3>Antique</h3><i>Explore</i></div></a>
+    <a class="bn b4 reveal" href="#"><div class="ph t-d" data-art="pendant" data-v="2"></div><div class="tx"><span>Collection</span><h3>Temple Jewellery</h3><i>Explore</i></div></a>
+    <a class="bn b5 lt reveal d1" href="#"><div class="ph t-e" data-art="earring" data-v="2"></div><div class="tx"><span>Collection</span><h3>Everyday Fine</h3><i>Explore</i></div></a>
+    <a class="bn b6 reveal d2" href="#"><div class="ph t-c" data-art="ring" data-v="2"></div><div class="tx"><span>Collection</span><h3>Solitaire Classics</h3><i>Explore</i></div></a>
+  </div>
+</div></section>
+
+<!-- 07 STORY -->
+<section class="sec story" id="story"><div class="wrap story-in">
+  <div class="story-art reveal">
+    <div class="a1"><div class="ph t-b" data-art="mangalsutra" data-v="1"></div></div>
+    <div class="a2"><div class="ph t-c" data-art="earring" data-v="1"></div></div>
+    <div class="seal">Crafted<br>with love<br>·<br>Nikita</div>
+  </div>
+  <div>
+    <span class="eyebrow">The House of Nikita</span>
+    <h2 class="reveal">Designed with <em>elegance.</em> Crafted with love.</h2>
+    <p class="reveal d1">Nikita Jewels crafts timeless elegance with exquisite designs that celebrate life’s most precious moments — from the first ring to the wedding mangalsutra, from everyday gold to heirloom bangles.</p>
+    <p class="reveal d2">Every piece begins with an eye for proportion and ends in the hands of skilled artisans, so what reaches you is made to be worn, gifted and handed down.</p>
+    <div class="pillars reveal d2">
+      <div><h4><sup>01</sup>Craftsmanship</h4><p>Detail you can feel — in every setting, clasp and finish.</p></div>
+      <div><h4><sup>02</sup>Elegance</h4><p>Designs that sit quietly, and are always noticed.</p></div>
+      <div><h4><sup>03</sup>Quality</h4><p>Gold and diamond jewellery made to last.</p></div>
+      <div><h4><sup>04</sup>Trust</h4><p>Rated 4.9 by customers across our Navi Mumbai showrooms.</p></div>
+    </div>
+    <a class="btn ghost" href="#">Our Story <svg class="ico arr" width="18"><use href="#i-arr"/></svg></a>
+  </div>
+</div></section>
+
+<!-- 08 BEST SELLERS -->
+<section class="sec" id="best"><div class="wrap">
+  <div class="sec-head"><div><span class="eyebrow">Most Loved</span><h2 class="reveal">Best <em>Sellers</em></h2></div><a class="link" href="#">Shop all</a></div>
+  <div class="prods three" id="bestGrid"></div>
+</div></section>
+
+<!-- 09 OCCASIONS -->
+<section class="sec" style="padding-top:0"><div class="wrap">
+  <div class="sec-head"><div><span class="eyebrow">Shop by Occasion</span><h2 class="reveal">For every <em>moment</em></h2></div></div>
+  <div class="occ" id="occGrid"></div>
+</div></section>
+
+<!-- 10 SCHEMES -->
+<section class="sec schemes" id="schemes"><div class="wrap">
+  <div class="sch-top"><div><span class="eyebrow">Gold Savings Schemes</span><h2 class="reveal" style="margin-top:14px">Save a little. <em>Own</em> something precious.</h2></div><p>Three ways to build towards your next piece of gold, with the Nikita Jewels family behind you.</p></div>
+  <div class="sch-grid">
+    <article class="sch reveal"><span class="no">01</span><div class="ic"><svg class="ico"><use href="#i-spark"/></svg></div><h3>Nikita Shine</h3><p>A simple monthly savings plan towards gold jewellery. Ask in-store for the current plan terms.</p><div class="fact"><small>Plan details</small><b>In store</b></div><a class="go" href="#stores">Enquire <svg class="ico" width="18"><use href="#i-arr"/></svg></a></article>
+    <article class="sch reveal d1"><span class="no">02</span><div class="ic"><svg class="ico"><use href="#i-coin"/></svg></div><h3>Nikita Sparkle</h3><p>Pay a fixed amount every month for 10 months or more and build towards your next jewellery purchase.</p><div class="fact"><small>Monthly instalment</small><b>₹1,000</b></div><a class="go" href="#stores">Enquire <svg class="ico" width="18"><use href="#i-arr"/></svg></a></article>
+    <article class="sch reveal d2"><span class="no">03</span><div class="ic"><svg class="ico"><use href="#i-lock"/></svg></div><h3>Golden Lock</h3><p>A plan designed to help you plan ahead for gold. Ask in-store for the current plan terms.</p><div class="fact"><small>Plan details</small><b>In store</b></div><a class="go" href="#stores">Enquire <svg class="ico" width="18"><use href="#i-arr"/></svg></a></article>
+  </div>
+  <p class="note">Scheme terms to be confirmed and supplied by Nikita Jewels before launch — only the facts currently on the live site are shown.</p>
+</div></section>
+
+<!-- 11 INSTAGRAM -->
+<section class="sec"><div class="wrap">
+  <div class="ig-head"><span class="eyebrow">Follow Along</span><h2 class="reveal">Life, in <em>Nikita</em></h2><a class="h" href="https://www.instagram.com/mynikitajewels/">@mynikitajewels</a></div>
+  <div class="ig" id="igGrid"></div>
+</div></section>
+
+<!-- 12 STORES -->
+<section class="sec stores" id="stores"><div class="wrap">
+  <div class="sec-head"><div><span class="eyebrow">Our Showrooms</span><h2 class="reveal">Come, <em>see it</em> in person</h2></div></div>
+  <div class="st-in">
+    <div class="st-list" id="stList"></div>
+    <div class="map" id="map">
+      <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice"><rect width="800" height="600" fill="#eadfca"/>
+        <path d="M0 440 C160 400 260 470 420 430 S700 380 800 410 L800 600 L0 600Z" fill="#cfdcd8" opacity=".75"/>
+        <g stroke="#fffaf0" stroke-width="10" fill="none" stroke-linecap="round"><path d="M-10 150 C180 170 300 90 520 130 S720 220 820 190"/><path d="M120 -10 C160 150 140 300 220 460"/><path d="M420 -10 C440 140 520 250 500 420"/><path d="M-10 330 C200 300 420 340 820 300"/></g>
+        <g stroke="#fffaf0" stroke-width="4" fill="none" opacity=".8"><path d="M250 0 L300 200 L260 420"/><path d="M620 0 L560 260 L640 440"/><path d="M0 240 L340 220 L800 90"/><path d="M0 70 L360 60 L800 20"/></g>
+        <g fill="#d9cba9" opacity=".6"><rect x="150" y="190" width="90" height="60"/><rect x="560" y="300" width="100" height="70"/><rect x="330" y="360" width="70" height="50"/></g></svg>
+      <div class="pin on" style="left:40%;top:30%" data-i="0"><i></i><span>Vashi</span></div>
+      <div class="pin" style="left:58%;top:52%" data-i="1"><i></i><span>Satra Plaza</span></div>
+      <div class="pin" style="left:66%;top:74%" data-i="2"><i></i><span>Ulwe</span></div>
+      <div class="pin" style="left:30%;top:68%" data-i="3"><i></i><span>Kharghar</span></div>
+      <span style="position:absolute;right:14px;top:12px;z-index:3;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)">Illustrative map</span><div class="map-card" id="mapCard"></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 13 TESTIMONIALS -->
+<section class="sec"><div class="wrap">
+  <div class="rev-top"><div class="score">4.9</div><div><div class="stars" id="stars"></div><h2 class="reveal" style="margin:14px 0 8px">Loved by <em>our families</em></h2><p style="color:var(--muted)">Great customer reviews — 487 on our website, plus 4.9 on Google across our showrooms.</p></div></div>
+  <div class="revs">
+    <figure class="rv reveal"><span class="tagp">Layout sample</span><div class="stars" data-s></div><q>Customer review text appears here, pulled live from your Shopify review app.</q><figcaption class="who"><span class="av">N</span><div>Verified customer<br><span style="color:var(--muted);font-size:12px">Showroom · Vashi</span></div></figcaption></figure>
+    <figure class="rv reveal d1"><span class="tagp">Layout sample</span><div class="stars" data-s></div><q>A second review sits here. Replace the sample with real words from real customers.</q><figcaption class="who"><span class="av">N</span><div>Verified customer<br><span style="color:var(--muted);font-size:12px">Showroom · Kharghar</span></div></figcaption></figure>
+    <figure class="rv reveal d2"><span class="tagp">Layout sample</span><div class="stars" data-s></div><q>A third review completes the row — short, personal and easy to read.</q><figcaption class="who"><span class="av">N</span><div>Verified customer<br><span style="color:var(--muted);font-size:12px">Showroom · Ulwe</span></div></figcaption></figure>
+  </div>
+</div></section>
+
+<!-- 14 NEWSLETTER -->
+<section class="news"><div class="wrap news-in">
+  <div><span class="eyebrow" style="color:var(--brown)">Stay in touch</span><h2 class="reveal">Be first to see what’s <em style="color:var(--brown)">new.</em></h2><p>New collections, scheme updates and showroom news, sent with care. Unsubscribe whenever you like.</p></div>
+  <div><form class="nf" onsubmit="return toast('Thank you — prototype only'),false"><input type="email" placeholder="Your email address" aria-label="Email"><button>Subscribe <svg class="ico" width="18"><use href="#i-arr"/></svg></button></form><small>By subscribing you agree to our Privacy Policy.</small></div>
+  <svg class="deco" viewBox="0 0 400 400"><circle cx="200" cy="200" r="190" fill="none" stroke="#3A2A1E" stroke-width="1"/><circle cx="200" cy="200" r="140" fill="none" stroke="#3A2A1E" stroke-width="1"/><circle cx="200" cy="200" r="90" fill="none" stroke="#3A2A1E" stroke-width="1"/></svg>
+</div></section>
+</main>
+
+<!-- 15 FOOTER -->
+<footer><div class="wrap">
+  <div class="ft-top">
+    <div><a class="logo" href="#top"><b>Nikita</b><small>Jewels</small></a><p>Crafting timeless elegance with exquisite designs that celebrate life’s most precious moments.</p><div class="soc"><a href="https://www.instagram.com/mynikitajewels/" aria-label="Instagram"><svg class="ico"><use href="#i-ig"/></svg></a><a href="https://facebook.com/mynikitajewels" aria-label="Facebook"><svg class="ico"><use href="#i-fb"/></svg></a><a href="https://x.com/mynikitajewels" aria-label="X"><svg class="ico"><use href="#i-xx"/></svg></a></div></div>
+    <div class="acc"><h5>Shop</h5><ul><li><a href="#">Rings</a></li><li><a href="#">Earrings</a></li><li><a href="#">Necklaces</a></li><li><a href="#">Bangles</a></li><li><a href="#">Bracelets</a></li><li><a href="#">Pendants</a></li><li><a href="#">Mangalsutra</a></li><li><a href="#">Chains</a></li></ul></div>
+    <div class="acc"><h5>Customer Support</h5><ul><li><a href="#">My Account</a></li><li><a href="#">Track Order</a></li><li><a href="#">Shipping &amp; Delivery</a></li><li><a href="#">Cancellation &amp; Refunds</a></li><li><a href="#">FAQ</a></li></ul></div>
+    <div class="acc"><h5>About Nikita Jewels</h5><ul><li><a href="#story">About Us</a></li><li><a href="#schemes">Gold Schemes</a></li><li><a href="#stores">Our Showrooms</a></li><li><a href="#">Terms &amp; Conditions</a></li><li><a href="#">Privacy Policy</a></li></ul></div>
+    <div><h5>Contact</h5><ul><li>+91 86556 11061</li><li>sales@nikitajewels.com</li><li style="line-height:1.5">Showrooms in Vashi, Ulwe &amp; Kharghar,<br>Navi Mumbai</li></ul></div>
+  </div>
+  <div class="ft-news"><h4>Join the Nikita family</h4><form class="nf" onsubmit="return toast('Thank you — prototype only'),false"><input type="email" placeholder="Your email address" aria-label="Email"><button>Subscribe <svg class="ico" width="18"><use href="#i-arr"/></svg></button></form></div>
+  <div class="ft-pay"><div class="pays"><span>Visa</span><span>Mastercard</span><span>UPI</span><span>GPay</span><span>BHIM</span></div><div style="font-size:12px">Secure payments</div></div>
+  <div class="ft-bot"><span>© 2026 Nikita Jewels. All rights reserved.</span><nav><a href="#">Sitemap</a><a href="#">Privacy Policy</a><a href="#">Terms &amp; Conditions</a><a href="#">FAQ</a></nav></div>
+</div></footer>
+
+<!-- mobile tab bar -->
+<nav class="tabbar">
+  <a href="#top"><svg class="ico"><use href="#i-home"/></svg>Home</a>
+  <a href="#cats"><svg class="ico"><use href="#i-grid"/></svg>Shop</a>
+  <button id="tSearch"><svg class="ico"><use href="#i-search"/></svg>Search</button>
+  <button><svg class="ico"><use href="#i-heart"/></svg>Wishlist<span class="cnt" id="wc2">0</span></button>
+  <button><svg class="ico"><use href="#i-bag"/></svg>Bag<span class="cnt" id="bc2">0</span></button>
+</nav>
+
+<!-- quick view -->
+<div class="modal" id="modal"><div class="bg" id="mbg"></div><div class="box"><button class="x" id="mx" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button><div class="mi" id="mi"></div><div class="mt" id="mt"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ procedural jewellery art ============ */
+const G='url(#gold)',GR='url(#goldR)',GD='url(#goldD)',GEM='url(#gem)';
+const rot=(a,cx,cy)=>`rotate(${a} ${cx} ${cy})`;
+function diamond(cx,cy,r){
+  const t=[[cx-r*.55,cy-r*.5],[cx+r*.55,cy-r*.5],[cx+r,cy],[cx,cy+r*1.05],[cx-r,cy]];
+  const p=t.map(a=>a.join(',')).join(' ');
+  return `<polygon points="${p}" fill="${GEM}" stroke="#8fa0b3" stroke-width="1.2"/>
+  <g stroke="#7f92a8" stroke-width=".9" fill="none" opacity=".75"><path d="M${cx-r},${cy}H${cx+r}"/><path d="M${cx-r*.55},${cy-r*.5}L${cx-r*.28},${cy}L${cx},${cy+r*1.05}L${cx+r*.28},${cy}L${cx+r*.55},${cy-r*.5}"/><path d="M${cx-r*.28},${cy}L${cx},${cy-r*.5}L${cx+r*.28},${cy}"/></g>
+  <polygon points="${cx-r*.55},${cy-r*.5} ${cx},${cy-r*.5} ${cx-r*.28},${cy}" fill="#fff" opacity=".75"/>`;
+}
+function spark(x,y,s,o=1){return `<path d="M${x},${y-s}Q${x},${y} ${x+s},${y}Q${x},${y} ${x},${y+s}Q${x},${y} ${x-s},${y}Q${x},${y} ${x},${y-s}Z" fill="#fff" opacity="${o}"/>`}
+function drop(cx,cy,w,h,gemR){ // teardrop frame + gem
+  return `<path d="M${cx},${cy-h/2}C${cx+w*.1},${cy-h*.2} ${cx+w/2},${cy} ${cx+w/2},${cy+h*.2}A${w/2},${w/2} 0 0 1 ${cx-w/2},${cy+h*.2}C${cx-w/2},${cy} ${cx-w*.1},${cy-h*.2} ${cx},${cy-h/2}Z" fill="${G}" stroke="#8F6D3A" stroke-width="1"/>
+  <path d="M${cx},${cy-h*.3}C${cx+w*.08},${cy-h*.1} ${cx+w*.34},${cy+h*.02} ${cx+w*.34},${cy+h*.18}A${w*.34},${w*.34} 0 0 1 ${cx-w*.34},${cy+h*.18}C${cx-w*.34},${cy+h*.02} ${cx-w*.08},${cy-h*.1} ${cx},${cy-h*.3}Z" fill="#FFF8E8" opacity=".92"/>
+  ${diamond(cx,cy+h*.12,gemR)}`;
+}
+function flower(cx,cy,R,n,gem){
+  let s='';for(let i=0;i<n;i++){const a=i*360/n;s+=`<ellipse cx="${cx}" cy="${cy-R*.62}" rx="${R*.3}" ry="${R*.42}" fill="${G}" stroke="#8F6D3A" stroke-width="1" transform="${rot(a,cx,cy)}"/>`}
+  return s+`<circle cx="${cx}" cy="${cy}" r="${R*.34}" fill="${GD}"/>`+diamond(cx,cy,R*.26);
+}
+const ART={
+ring(v){
+  const big=v==2;
+  return `<ellipse cx="200" cy="360" rx="130" ry="16" fill="#3a2a1e" opacity=".22"/>
+  <g filter="url(#sh)"><ellipse cx="200" cy="262" rx="104" ry="${big?112:104}" fill="none" stroke="${GR}" stroke-width="${big?22:18}"/>
+  <ellipse cx="200" cy="262" rx="104" ry="${big?112:104}" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="3" stroke-dasharray="140 700" stroke-dashoffset="-380"/>
+  <path d="M168 170 L162 132 H238 L232 170Z" fill="${GD}"/>
+  <path d="M150 140 Q200 112 250 140 L236 166 Q200 150 164 166Z" fill="${G}" stroke="#8F6D3A"/>
+  ${diamond(200,110,big?50:42)}
+  ${big?[[132,170],[268,170]].map(([x,y])=>diamond(x,y,12)).join(''):''}</g>
+  ${spark(262,64,14)}${spark(120,92,9,.8)}${spark(300,120,7,.7)}`},
+earring(v){
+  if(v==2) return [120,280].map(x=>`<g filter="url(#sh)"><path d="M${x},50 q16,0 16,18 v14" fill="none" stroke="${GR}" stroke-width="5" stroke-linecap="round"/><circle cx="${x}" cy="96" r="14" fill="${G}"/>${diamond(x,96,8)}<path d="M${x},112 v28" stroke="${GR}" stroke-width="4"/>${drop(x,210,86,150,24)}</g>`).join('')+spark(200,120,12)+spark(60,230,8,.8)+spark(345,150,9,.7);
+  return [128,272].map(x=>`<g filter="url(#sh)">${flower(x,205,78,8)}</g>`).join('')+spark(200,95,12)+spark(345,100,8,.8)+spark(62,310,8,.7);
+},
+necklace(v){
+  const d=v==2?'M40 40 C70 360 330 360 360 40':'M52 40 C80 330 320 330 348 40';
+  return `<g filter="url(#sh)"><path d="${d}" fill="none" stroke="${GR}" stroke-width="7" stroke-dasharray="15 5" stroke-linecap="round"/>
+  <path d="${v==2?'M80 40 C110 290 290 290 320 40':'M90 40 C115 250 285 250 310 40'}" fill="none" stroke="${G}" stroke-width="3.5" stroke-dasharray="3 7" stroke-linecap="round"/>
+  ${[110,150,250,290].map((x,i)=>`<circle cx="${x}" cy="${[205,238,238,205][i]+(v==2?18:0)}" r="${i%2?7:5}" fill="${G}"/>`).join('')}
+  ${drop(200,(v==2?285:262),70,120,20)}</g>${spark(60,200,10)}${spark(340,230,8,.8)}`},
+bangle(v){
+  const one=(cx,cy,r,w)=>`<g filter="url(#sh)"><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${GR}" stroke-width="${w}"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#5E4422" stroke-opacity=".35" stroke-width="${w*.55}" stroke-dasharray="1.5 ${w*.35}"/><circle cx="${cx}" cy="${cy}" r="${r-w/2+2}" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="2" stroke-dasharray="120 900" stroke-dashoffset="-260"/></g>`;
+  return v==2? one(170,200,110,26)+one(220,190,110,26)+one(195,225,110,26)+spark(330,90,12)
+   : one(200,205,118,34)+`<g>${[0,60,120,180,240,300].map(a=>`<g transform="${rot(a,200,205)}"><rect x="193" y="76" width="14" height="14" rx="3" fill="${GEM}" stroke="#8fa0b3" transform="rotate(45 200 83)"/></g>`).join('')}</g>`+spark(335,80,13)+spark(70,330,8,.8)},
+bracelet(){
+  return `<g filter="url(#sh)"><ellipse cx="200" cy="210" rx="140" ry="118" fill="none" stroke="${GR}" stroke-width="13" stroke-dasharray="20 5"/><ellipse cx="200" cy="210" rx="140" ry="118" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="2" stroke-dasharray="20 5" transform="translate(0,-4)"/>
+  <ellipse cx="200" cy="210" rx="108" ry="88" fill="none" stroke="${G}" stroke-width="3.5" stroke-dasharray="3 6" stroke-linecap="round"/>
+  <path d="M200 328 v30" stroke="${GR}" stroke-width="4"/>${drop(200,385,38,64,11)}</g>${spark(330,100,12)}${spark(80,110,8,.8)}`},
+pendant(v){
+  const m=v==2;
+  return `<g filter="url(#sh)"><path d="M70 30 L200 ${m?200:190} L330 30" fill="none" stroke="${GR}" stroke-width="5" stroke-dasharray="10 4" stroke-linecap="round"/>
+  ${m?`<circle cx="200" cy="270" r="62" fill="${G}" stroke="#8F6D3A"/><circle cx="200" cy="270" r="48" fill="${GD}"/>${[0,45,90,135,180,225,270,315].map(a=>`<circle cx="200" cy="${270-55}" r="5" fill="#FFF8E8" transform="${rot(a,200,270)}"/>`).join('')}${diamond(200,270,26)}`:drop(200,265,100,170,28)}</g>${spark(290,200,12)}${spark(110,250,8,.8)}`},
+mangalsutra(){
+  return `<g filter="url(#sh)"><path d="M70 30 C95 330 305 330 330 30" fill="none" stroke="#17120f" stroke-width="9" stroke-dasharray=".1 13" stroke-linecap="round"/><path d="M105 30 C125 270 275 270 295 30" fill="none" stroke="#17120f" stroke-width="9" stroke-dasharray=".1 13" stroke-linecap="round"/>
+  <path d="M70 30 C95 330 305 330 330 30" fill="none" stroke="${G}" stroke-width="2" opacity=".7"/>
+  ${[0,1,2].map(i=>`<circle cx="${160+i*40}" cy="${262+(i==1?24:0)}" r="${i==1?22:15}" fill="${G}" stroke="#8F6D3A"/>`).join('')}
+  ${diamond(160,262,8)}${diamond(200,286,13)}${diamond(240,262,8)}<path d="M200 308 v18" stroke="${GR}" stroke-width="3"/>${drop(200,350,34,56,9)}</g>${spark(330,230,10)}${spark(70,200,7,.8)}`},
+chain(){
+  return `<g filter="url(#sh)"><path d="M40 90 C120 360 280 360 360 90" fill="none" stroke="${GR}" stroke-width="12" stroke-dasharray="22 4" stroke-linecap="round"/><path d="M40 90 C120 360 280 360 360 90" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="3" stroke-dasharray="22 4" stroke-linecap="round" transform="translate(0,-3)"/>
+  <path d="M80 80 C140 270 260 270 320 80" fill="none" stroke="${G}" stroke-width="5" stroke-dasharray="7 3" stroke-linecap="round"/></g>${spark(330,300,11)}${spark(70,260,8,.8)}`},
+gift(){return `<g filter="url(#sh)"><rect x="110" y="190" width="180" height="130" fill="${GD}"/><rect x="100" y="150" width="200" height="50" fill="${G}"/><rect x="188" y="150" width="24" height="170" fill="#FFF3D4"/><path d="M200 150c-40-50-90-30-60 0zM200 150c40-50 90-30 60 0z" fill="none" stroke="#FFF3D4" stroke-width="8"/></g>${spark(310,130,12)}`},
+gen(){return ART.ring(1)}
+};
+function art(kind,v){return ART[kind]?ART[kind](+v||1):ART.ring(1)}
+function svgArt(kind,v,vb){return `<svg class="art" viewBox="${vb||'0 0 400 400'}" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><circle cx="200" cy="190" r="170" fill="url(#glow)"/>${art(kind,v)}</svg>`}
+function fillPh(root){root.querySelectorAll('.ph[data-art]').forEach(el=>{if(!el.querySelector('svg'))el.innerHTML=svgArt(el.dataset.art,el.dataset.v)})}
+
+/* hero campaign art */
+function heroArt(){
+  return `<svg class="art" viewBox="0 0 800 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs><radialGradient id="hbg" cx=".62" cy=".38" r=".8"><stop offset="0" stop-color="#7a5636"/><stop offset=".5" stop-color="#3a2a1e"/><stop offset="1" stop-color="#1b120c"/></radialGradient>
+  <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b120c" stop-opacity=".95"/><stop offset=".35" stop-color="#1b120c" stop-opacity="0"/></linearGradient>
+  <linearGradient id="rim" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F7E7BC" stop-opacity="0"/><stop offset=".5" stop-color="#F7E7BC" stop-opacity=".35"/><stop offset="1" stop-color="#F7E7BC" stop-opacity="0"/></linearGradient></defs>
+  <rect width="800" height="900" fill="url(#hbg)"/>
+  <circle cx="500" cy="380" r="360" fill="url(#glow)" opacity=".5"/>
+  <path d="M0 900V760C130 700 250 690 335 650L350 520C310 470 265 400 255 300 250 200 270 100 290 0H510C540 100 560 200 550 300 540 400 490 470 450 520L465 650C550 690 670 700 800 760V900Z" fill="url(#skin)"/>
+  <path d="M345 520C330 560 330 620 335 650 270 690 130 700 0 760V700C110 650 230 640 300 600Z" fill="#000" opacity=".16"/>
+  <path d="M455 520C470 570 470 620 465 650 530 690 670 700 800 760V700C690 650 570 640 500 600Z" fill="#fff" opacity=".07"/>
+  <path d="M262 300C300 380 340 450 350 520L330 640 345 520C320 470 285 400 262 300Z" fill="#000" opacity=".12"/>
+  <rect width="800" height="420" fill="url(#fade)"/>
+  <path d="M400 540 Q400 800 400 900" stroke="#000" stroke-opacity=".08" stroke-width="2" fill="none"/>
+  <g filter="url(#sh)">
+    <path d="M338 585 C350 700 450 700 462 585" fill="none" stroke="${GR}" stroke-width="5" stroke-dasharray="11 4" stroke-linecap="round"/>
+    <path d="M326 620 C345 770 455 770 474 620" fill="none" stroke="${G}" stroke-width="7" stroke-dasharray="14 4" stroke-linecap="round"/>
+    <path d="M312 655 C340 840 460 840 488 655" fill="none" stroke="${GR}" stroke-width="3" stroke-dasharray="2 6" stroke-linecap="round"/>
+    <g transform="translate(400,815) scale(.8)">${drop(0,0,70,120,20)}</g>
+    <g transform="translate(262,300) scale(.42)"><path d="M0,-20v40" stroke="${GR}" stroke-width="7"/><circle cy="-24" r="12" fill="${G}"/>${drop(0,95,86,150,24)}</g>
+    <g transform="translate(538,300) scale(.42)"><path d="M0,-20v40" stroke="${GR}" stroke-width="7"/><circle cy="-24" r="12" fill="${G}"/>${drop(0,95,86,150,24)}</g>
+  </g>
+  ${spark(560,420,16)}${spark(215,420,10,.8)}${spark(470,760,13)}${spark(330,730,9,.8)}${spark(600,150,11,.6)}
+  </svg>`}
+
+/* ============ data ============ */
+const cats=[['Rings','ring',1,'t-a'],['Earrings','earring',1,'t-b'],['Necklaces','necklace',1,'t-c'],['Bangles','bangle',1,'t-e'],['Bracelets','bracelet',1,'t-f'],['Pendants','pendant',1,'t-d'],['Mangalsutra','mangalsutra',1,'t-c'],['Chains','chain',1,'t-a']];
+const P={
+ n:[{n:'Elegant Floral Gold Stud Earrings',w:'2.81 g',p:'₹39,030',a:'earring',v:1,t:'t-a'},
+    {n:'Festive Teardrop Gold Stud Earrings',w:'10.31 g',p:'₹1,64,286',a:'earring',v:2,t:'t-b'},
+    {n:'Elegant Floral Gold Earrings',w:'5.374 g',p:'₹1,15,799',a:'earring',v:1,t:'t-e'},
+    {n:'Gold Bangle / Gold Kada 22KT',w:'11.43 g',p:'₹1,62,863',a:'bangle',v:1,t:'t-c'}],
+ b:[{n:'Gold Bangle Set',w:'11.69 g',p:'₹1,59,200',a:'bangle',v:2,t:'t-f'},
+    {n:'Traditional Gold Bangles (Set of 4)',w:'34.28 g',p:'₹4,88,448',a:'bangle',v:2,t:'t-a'},
+    {n:'Traditional Floral Gold Bangles (Set of 2)',w:'8.45 g',p:'₹1,17,367',a:'bangle',v:1,t:'t-c'},
+    {n:'Floral Elegant Traditional Gold Bangle',w:'19.5 g',p:'₹2,77,851',a:'bangle',v:1,t:'t-e'},
+    {n:'Traditional Floral Gold Bangle',w:'20.2 g',p:'₹2,87,825',a:'bangle',v:2,t:'t-b'},
+    {n:'Traditional Gold Bangle (Set of 2)',w:'40.71 g',p:'₹5,80,067',a:'bangle',v:1,t:'t-d'}]};
+const occ=[['Weddings','Bridal & gold','necklace',2,'t-c'],['Engagements','Rings & solitaires','ring',1,'t-b'],['Anniversaries','Celebrate years','pendant',1,'t-d'],['Birthdays','Little luxuries','bracelet',1,'t-e'],['Gifting','Thoughtfully given','gift',1,'t-f'],['Everyday Wear','Daily elegance','chain',1,'t-a']];
+const stores=[
+ {n:'Vashi · Sector 17',a:'Shop 6–9, Grain Merchant Co-op Society, Sector 17, Vashi 400703',p:'9082285782',r:'4.9',c:'1,169'},
+ {n:'Vashi · Satra Plaza',a:'8/108, Satra Plaza, Palm Beach Road, Sector 19D, Vashi 400703',p:'9169936993',r:'4.9',c:'1,144'},
+ {n:'Ulwe · Sector 09',a:'Shop 13 & 14, SM Vision, Plot 166, Sector 09, Ulwe 410206',p:'9324946123',r:'5.0',c:'562'},
+ {n:'Kharghar · Sector 12',a:'Shop 17, CHS Ltd, Shree Krishna Paradise, Plot D-69, Sector 12, Kharghar 410210',p:'8655335460',r:'4.9',c:'730'}];
+const igTiles=[['ring',1,'t-a'],['earring',2,'t-c'],['necklace',1,'t-b'],['bangle',1,'t-e'],['mangalsutra',1,'t-d'],['pendant',1,'t-f'],['bracelet',1,'t-c'],['chain',1,'t-a'],['earring',1,'t-e'],['ring',2,'t-d'],['bangle',2,'t-b'],['necklace',2,'t-c']];
+
+/* ============ render ============ */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const heart='<svg class="ico"><use href="#i-heart"/></svg>';
+$('#heroArt').innerHTML=heroArt();
+$('#catGrid').innerHTML=cats.map(([n,a,v,t],i)=>`<a class="cat reveal d${i%4+1} ${t=='t-a'||t=='t-e'||t=='t-f'?'light':''}" href="#"><div class="ph ${t}" data-art="${a}" data-v="${v}"></div><div class="lab"><h3>${n}</h3><span>Shop →</span></div></a>`).join('');
+const card=(x,i,tag)=>`<article class="card reveal d${i%4+1}"><div class="img"><div class="ph main ${x.t}" data-art="${x.a}" data-v="${x.v}"></div><div class="alt ph ${x.t=='t-c'?'t-a':'t-c'}" data-art="${x.a}" data-v="${x.v==1?2:1}"></div>${tag?`<span class="badge">${tag}</span>`:''}<button class="wish" aria-label="Add to wishlist">${heart}</button><button class="qv" data-q="${i}" data-g="${tag==='New'?'n':'b'}">Quick View</button><button class="mq" data-q="${i}" data-g="${tag==='New'?'n':'b'}" aria-label="Quick view"><svg class="ico"><use href="#i-eye"/></svg></button></div><div class="info"><h3>${x.n}</h3><span class="sub">${x.w} · 22KT Gold</span><span class="price">${x.p}</span></div></article>`;
+$('#newGrid').innerHTML=P.n.map((x,i)=>card(x,i,'New')).join('');
+$('#bestGrid').innerHTML=P.b.map((x,i)=>card(x,i,'')).join('').replace(/data-g="b"/g,'data-g="b"');
+$('#occGrid').innerHTML=occ.map(([n,s,a,v,t],i)=>`<a class="oc reveal d${i%4+1}" href="#"><div class="ph ${t}" data-art="${a}" data-v="${v}"></div><div class="tx"><h3>${n}</h3><span>${s}</span></div></a>`).join('');
+$('#igGrid').innerHTML=igTiles.map(([a,v,t])=>`<a href="https://www.instagram.com/mynikitajewels/"><div class="ph ${t}" data-art="${a}" data-v="${v}"></div><div class="ov"><svg class="ico" style="width:28px;height:28px"><use href="#i-ig"/></svg></div></a>`).join('');
+$('#stList').innerHTML=stores.map((s,i)=>`<div class="stc ${i?'':'on'}" data-i="${i}"><h3>${s.n}</h3><address>${s.a}</address><a class="ph-n" href="tel:${s.p}">${s.p} <span class="rt">· ★ ${s.r} (${s.c})</span></a><a class="dir" href="#"><svg class="ico" width="16" height="16"><use href="#i-pin"/></svg>Directions</a></div>`).join('');
+const star='<svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 21l1.6-7L2 9.2l7.1-.6z"/></svg>';
+$('#stars').innerHTML=star.repeat(5);$$('[data-s]').forEach(e=>e.innerHTML=star.repeat(5));
+fillPh(document);
+function setStore(i){$$('.stc').forEach(e=>e.classList.toggle('on',e.dataset.i==i));$$('.pin').forEach(e=>e.classList.toggle('on',e.dataset.i==i));const s=stores[i];$('#mapCard').innerHTML=`<small>Showroom · ${s.r} ★</small><h4>${s.n}</h4><p>${s.a}<br>Open today · closes 9 pm</p>`}
+setStore(0);
+$$('.stc').forEach(e=>e.addEventListener('mouseenter',()=>setStore(e.dataset.i)));
+$$('.pin').forEach(e=>e.addEventListener('click',()=>setStore(e.dataset.i)));
+
+/* ============ interactions ============ */
+// announcement rotator
+let ai=0;const rows=$$('#ann .row');setInterval(()=>{rows[ai].classList.remove('on');ai=(ai+1)%rows.length;rows[ai].classList.add('on')},4200);
+// sticky header
+addEventListener('scroll',()=>$('#hd').classList.toggle('sc',scrollY>60),{passive:true});
+// reveal
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+$$('.reveal').forEach(e=>io.observe(e));
+// search
+const openS=()=>{$('#search').classList.add('on');$('#scrim').classList.add('on');setTimeout(()=>$('#search input').focus(),400)};
+const closeAll=()=>{['#search','#drawer'].forEach(s=>$(s).classList.remove('on'));$('#scrim').classList.remove('on')};
+$('#sBtn').onclick=openS;$('#tSearch').onclick=openS;$('#sx').onclick=closeAll;$('#scrim').onclick=closeAll;
+// drawer
+$('#burger').onclick=()=>{$('#drawer').classList.add('on');$('#scrim').classList.add('on')};$('#dx').onclick=closeAll;
+$$('#drawer a').forEach(a=>a.addEventListener('click',closeAll));
+$$('.acc-t').forEach(b=>b.addEventListener('click',()=>{const s=b.nextElementSibling,o=b.classList.toggle('open');s.style.maxHeight=o?s.scrollHeight+'px':0}));
+// footer accordion (mobile)
+$$('.ft-top .acc h5').forEach(h=>h.addEventListener('click',()=>{if(innerWidth>768)return;const p=h.parentElement,u=h.nextElementSibling,o=p.classList.toggle('open');u.style.maxHeight=o?u.scrollHeight+'px':0}));
+// wishlist / bag
+let wc=0,bc=0;const setC=()=>{[['#wc',wc],['#wc2',wc],['#bc',bc],['#bc2',bc]].forEach(([s,n])=>{const e=$(s);e.textContent=n;e.classList.toggle('on',n>0)})};
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2200)}
+document.addEventListener('click',e=>{
+  const w=e.target.closest('.wish');if(w){const on=w.classList.toggle('on');wc+=on?1:-1;setC();toast(on?'Added to wishlist':'Removed from wishlist');return}
+  const q=e.target.closest('[data-q]');if(q){openQV(q.dataset.g,+q.dataset.q);return}
+  const a=e.target.closest('a[href="#"]');if(a)e.preventDefault();
+});
+// quick view
+function openQV(g,i){const x=P[g][i];$('#mi').innerHTML=`<div class="ph ${x.t}" data-art="${x.a}" data-v="${x.v}"></div>`;fillPh($('#mi'));
+ $('#mt').innerHTML=`<span class="eyebrow">22KT Gold</span><h3>${x.n}</h3><div class="pr">${x.p}</div><p style="color:var(--muted);font-size:14px">Price as listed on nikitajewels.com. Final price may vary with live gold rate.</p><div class="spec"><div><span>Gross weight</span><span>${x.w}</span></div><div><span>Availability</span><span>In stock</span></div></div><button class="btn dark" id="addBag" style="margin-top:10px">Add to Bag</button><a class="link" href="#" style="align-self:flex-start;margin-top:8px">View full details</a>`;
+ $('#addBag').onclick=()=>{bc++;setC();toast('Added to bag');$('#modal').classList.remove('on')};
+ $('#modal').classList.add('on')}
+$('#mx').onclick=$('#mbg').onclick=()=>$('#modal').classList.remove('on');
+addEventListener('keydown',e=>{if(e.key==='Escape'){closeAll();$('#modal').classList.remove('on')}});
+</script>
+</body>
+</html>
